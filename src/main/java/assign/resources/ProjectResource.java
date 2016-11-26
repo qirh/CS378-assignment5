@@ -1,9 +1,6 @@
 package assign.resources;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.sql.SQLException;
@@ -17,29 +14,20 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import assign.domain.Project;
-import assign.services.ProjectService;
-import assign.services.ProjectServiceImpl;
+import assign.domain.Meeting;
+import assign.services.DBLoader;
 
 @Path("/myeavesdrop")
 public class ProjectResource {
 	
-	ProjectService projectService;
+	DBLoader db;
 	String password;
 	String username;
 	String dbhost;	
@@ -48,7 +36,7 @@ public class ProjectResource {
 		dbhost = servletContext.getInitParameter("DBHOST");
 		username = servletContext.getInitParameter("DBUSERNAME");
 		password = servletContext.getInitParameter("DBPASSWORD");
-		this.projectService = new ProjectServiceImpl(dbhost, username, password);		
+		this.db = new DBLoader();		
 	}
 	
 	@GET

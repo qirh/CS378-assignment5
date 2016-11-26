@@ -4,7 +4,19 @@ import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "project")
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
+@Table(name = "Projects")
 public class Project {
 	private String name;
 	private String des;
@@ -12,26 +24,39 @@ public class Project {
 	private int id;
 	
 	public Project() {}
-	
+	public Project(String name, String des) {
+		this.name = new String(name);
+		this.des = new String(des);
+	}
+	public Project(String name, String des, ArrayList<Meeting> meetings) {
+		this.name = new String(name);
+		this.des = new String(des);
+		this.meetings = meetings;
+	}
 	public Project(String name, String des, ArrayList<Meeting> meetings, int id) {
 		this.name = new String(name);
 		this.des = new String(des);
 		this.meetings = meetings;
 		this.id = id;
 	}
-	@XmlElement
+	
+	@Column(name="name")
 	public String getName() {
 		return name;
 	}
-	@XmlElement(name="description")
+	@Column(name="description")
 	public String getDes() {
 		return des;
 	}
-	@XmlElement
+    @OneToMany(mappedBy="Project")
+    @Cascade({CascadeType.DELETE})
 	public ArrayList<Meeting> getmeetings() {
 		return meetings;
 	}
-	@XmlElement
+	@Id
+	@GeneratedValue(generator="increment")
+	@GenericGenerator(name="increment", strategy = "increment")
+	//@Column(name="project_id")
 	public int getId() {
 		return id;
 	}

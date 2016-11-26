@@ -32,9 +32,9 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306/student_courses</property>
-        <property name="connection.username">devdatta1</property>
-        <property name="connection.password">password</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306//cs378_almto3</property>
+        <property name="connection.username">almto3</property>
+        <property name="connection.password">PxWHQV5wg5</property>
 
         <!-- JDBC connection pool (use the built-in) -->
         <property name="connection.pool_size">1</property>
@@ -52,8 +52,8 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
                 
         <!-- Names the annotated entity class -->
-        <mapping class="assign.domain.Assignment"/>
-        <mapping class="assign.domain.UTCourse"/>
+        <mapping class="assign.domain.Meeting"/>
+        <mapping class="assign.domain.Project"/>
 
     </session-factory>
 

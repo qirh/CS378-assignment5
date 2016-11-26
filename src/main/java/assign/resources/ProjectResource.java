@@ -37,14 +37,14 @@ import assign.services.ProjectService;
 import assign.services.ProjectServiceImpl;
 
 @Path("/myeavesdrop")
-public class UTCoursesResource {
+public class ProjectResource {
 	
 	ProjectService projectService;
 	String password;
 	String username;
 	String dbhost;	
 	
-	public UTCoursesResource(@Context ServletContext servletContext) {
+	public ProjectResource(@Context ServletContext servletContext) {
 		dbhost = servletContext.getInitParameter("DBHOST");
 		username = servletContext.getInitParameter("DBUSERNAME");
 		password = servletContext.getInitParameter("DBPASSWORD");
@@ -64,7 +64,8 @@ public class UTCoursesResource {
 		
 	}
 	
-	
+	//1) Create project
+	// POST http://localhost:8080/assignment5/myeavesdrop/projects/
 	@POST
 	@Path("/projects")
 	@Consumes("application/xml")
@@ -82,20 +83,49 @@ public class UTCoursesResource {
 		catch(SQLException e) {
 			return Response.status(404).build();
 		}
-		
-		System.out.println(p.getDes());
-		System.out.println(p.getName());
-		System.out.println(p.getId());
+		p.printProject();
 		
 		Response res = Response.created(URI.create("myeavesdrop/projects/" + p.getId())).build();
 		
 		return res;
 			
 	}
-	@PUT
-	@Path("/projects/{project_id}")
+	//2) Create a meeting for a project
+	// POST http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>/meetings
+	@POST
+	@Path("/projects/{project_id}/Meetings")
 	@Consumes("application/xml")
-	public Response putProject(@PathParam("project_id") Integer project_id, InputStream input) throws Exception {
+	public Response postMeeting(InputStream input) throws Exception {
+				
+		return null;
+			
+	}
+	//3) Get project details
+	// GET http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>
+	@GET
+	@Path("/projects/{project_id}")
+	@Produces("application/xml")
+	public Response getProjects(@PathParam("project_id") Integer project_id) throws Exception {
+			
+		Project p = projectService.getProject(project_id);
+			
+		if(p == null)
+			return Response.status(404).build();
+		
+		System.out.println("HERE3");
+		try {
+			return Response.ok(projectXML(p), "application/xml").encoding("UTF-8").build();
+		}
+		catch(JAXBException e) {
+			return Response.status(404).build();
+		}
+	}	
+	//4) Update meeting
+	// PUT http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>/meetings/<m1>
+	@PUT
+	@Path("/projects/{project_id}/Meetings/{meeting_id}")
+	@Consumes("application/xml")
+	public Response putProject(@PathParam("project_id") Integer project_id, @PathParam("meeting_id") Integer meeting_id,InputStream input) throws Exception {
 			
 		System.out.println("HERE1");
 		Project p = projectService.getProject(project_id);
@@ -115,25 +145,8 @@ public class UTCoursesResource {
 		
 			
 	}
-	@GET
-	@Path("/projects/{project_id}")
-	@Produces("application/xml")
-	public Response getProjects(@PathParam("project_id") Integer project_id) throws Exception {
-		
-		Project p = projectService.getProject(project_id);
-	
-		
-		if(p == null){
-			return Response.status(404).build();
-		}
-		System.out.println("HERE3");
-		try {
-			return Response.ok(projectXML(p), "application/xml").encoding("UTF-8").build();
-		}
-		catch(JAXBException e) {
-			return Response.status(404).build();
-		}
-	}
+	//5) Delete a project
+	// DELETE http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>
 	@DELETE
 	@Path("/projects/{project_id}")
 	@Consumes("application/xml")

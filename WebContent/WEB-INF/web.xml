@@ -10,24 +10,22 @@
   </context-param>
   <context-param>
     <param-name>DBHOST</param-name>
-    <param-value></param-value>
+    <param-value>localhost</param-value>
   </context-param>
   <context-param>
     <param-name>DBUSERNAME</param-name>
-    <param-value></param-value>
+    <param-value>almto3</param-value>
   </context-param>
   <context-param>
     <param-name>DBPASSWORD</param-name>
-    <param-value></param-value>
+    <param-value>PxWHQV5wg5</param-value>
   </context-param>
   <servlet>
-    <servlet-name>assignment4</servlet-name>
-    <servlet-class>
-            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
-        </servlet-class>
+    <servlet-name>assignment5</servlet-name>
+    <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>assignment4</servlet-name>
+    <servlet-name>assignment5</servlet-name>
     <url-pattern>/myeavesdrop</url-pattern>
   </servlet-mapping>
 </web-app>

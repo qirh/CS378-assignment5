@@ -172,6 +172,10 @@ public class ProjectServiceImpl implements ProjectService {
 	         throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 	      }
 	 }
+	public Project addMeeting(Project c) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 
 }

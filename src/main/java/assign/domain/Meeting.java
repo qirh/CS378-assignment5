@@ -36,11 +36,11 @@ public class Meeting {
 		this.id = id;
 	}
 	
-	@Column(name = "name")
+	@Column(name = "meetingName")
 	public String getName() {
 		return name;
 	}
-	@Column(name = "year")
+	@Column(name = "meetingYear")
 	public String getYear() {
 		return year;
 	}

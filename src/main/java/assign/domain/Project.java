@@ -1,14 +1,11 @@
 package assign.domain;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -16,43 +13,42 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "Projects")
 public class Project {
 	
-	private String name;
-	private String des;
+	private String projectName;
+	private String projectDescription;
 	private Set<Meeting> meetings = new HashSet<Meeting>();
-	private int id;
+	private int projectId;
 	
 	public Project() {}
 	public Project(String name, String des) {
-		this.name = new String(name);
-		this.des = new String(des);
+		this.projectName = new String(name);
+		this.projectDescription = new String(des);
 	}
 	public Project(String name, String des, Set<Meeting> meetings) {
-		this.name = new String(name);
-		this.des = new String(des);
+		this.projectName = new String(name);
+		this.projectDescription = new String(des);
 		this.meetings = meetings;
 	}
-	public Project(String name, String des, Set<Meeting> meetings, int id) {
-		this.name = new String(name);
-		this.des = new String(des);
+	public Project(String name, String des, Set<Meeting> meetings, int projectId) {
+		this.projectName = new String(name);
+		this.projectDescription = new String(des);
 		this.meetings = meetings;
-		this.id = id;
+		this.projectId = projectId;
 	}
 
 	@Column(name="projectName")
 	public String getName() {
-		return name;
+		return projectName;
 	}
 	@Column(name="projectDescription")
 	public String getDes() {
-		return des;
+		return projectDescription;
 	}
-	@OneToMany(mappedBy="project")
+	@OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     @Cascade({CascadeType.DELETE})
 	public Set<Meeting> getmeetings() {
 		return meetings;
@@ -62,19 +58,19 @@ public class Project {
 	//@GenericGenerator(name="increment", strategy = "increment")
 	@Column(name="projectId")
 	public int getId() {
-		return id;
+		return projectId;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.projectName = name;
 	}
 	public void setDes(String des) {
-		this.des = des;
+		this.projectDescription = des;
 	}
 	public void setMeetings(Set<Meeting> meetings) {
 		this.meetings = meetings;
 	}
     public void setId(int id) {
-        this.id = id;
+        this.projectId = id;
     }
     public void addMeeting(Meeting meeting) {
 		meetings.add(meeting);
@@ -98,6 +94,6 @@ public class Project {
 		System.out.println(this.getId());
 	}
     public Project copy() {
-    	return new Project(this.name, this.des, copyMeetings(this.meetings), this.id);
+    	return new Project(this.projectName, this.projectDescription, copyMeetings(this.meetings), this.projectId);
     }
 }

@@ -34,36 +34,16 @@ public class DBLoader {
 	public void loadData(Map<String, List<String>> data) {
 		logger.info("Inside loadData.");
 	}
-	public int addMeeting(String name, String year) throws Exception {
+
+	public Project addProject(Project p) throws Exception {
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
-		int meetingId = -1;
+		Project project = null;
 		try {
 			tx = session.beginTransaction();
-			Meeting meeting = new Meeting(name, year); 
-			session.save(meeting);
-		    meetingId = meeting.getId();
-		    tx.commit();
-		} catch (Exception e) {
-			if (tx != null) {
-				tx.rollback();
-				throw e;
-			}
-		}
-		finally {
-			session.close();
-		}
-		return meetingId;
-	}
-	public int addProject(Project p) throws Exception {
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		int meetingId = -1;
-		try {
-			tx = session.beginTransaction();
-			Project project = p.copy();
+			project = p.copy();
 			session.save(project);
-		    meetingId = project.getId();
+		   
 		    tx.commit();
 		} catch (Exception e) {
 			if (tx != null) {
@@ -74,7 +54,27 @@ public class DBLoader {
 		finally {
 			session.close();
 		}
-		return meetingId;
+		return project;
+	}
+	public Meeting addMeeting(Meeting m, int projectId) throws Exception {
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		Meeting meeting = null;
+		try {
+			tx = session.beginTransaction();
+			meeting = m.copy(); 
+			session.save(meeting);
+		    tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+				throw e;
+			}
+		}
+		finally {
+			session.close();
+		}
+		return meeting;
 	}
 	/*
 	public Long addAssignmentAndCourse(String title, String courseTitle) throws Exception {
@@ -128,15 +128,6 @@ public class DBLoader {
 		}
 		return projectId;
 	}
-	// BAD PRACTICE
-	public ArrayList<Meeting> getMeetingsForProject(int project_id) throws Exception {
-		Session session = sessionFactory.openSession();		
-		session.beginTransaction();
-		String query = "from Meeting where project_id = " + project_id; 
-		List<Meeting> meetings = session.createQuery(query).list();
-		session.close();
-		return new ArrayList<Meeting>(meetings);
-	}
 	public List<Object[]> getMeetingsForProject(String projectName) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -148,6 +139,7 @@ public class DBLoader {
 		return meetings;
 	}
 	public Meeting getMeeting(String meetingName) throws Exception {
+		
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		Criteria criteria = session.createCriteria(Meeting.class).add(Restrictions.eq("meetingName", meetingName));
@@ -160,25 +152,14 @@ public class DBLoader {
 		return null;
 		
 	}
-	public Project getProject(String projectName) throws Exception {
-
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectName", projectName));	
-		List<Project> projects = criteria.list();
-		
-		session.close();
-		if (projects.size() > 0) 
-			return projects.get(0);	
-		return null;
-	}
 	public Project getProject(int projectId) throws Exception {
+		System.out.println("getProject(int projectId) where projectId == " + projectId);
 		Session session = sessionFactory.openSession();
 		try{
 			session.beginTransaction();
-			Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectId", projectId));	
-			List<Project> projects = criteria.list();
+			Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("", projectId ));	
 			
+			List<Project> projects = criteria.list();
 			if (projects.size() > 0) 
 				return projects.get(0);	
 		}

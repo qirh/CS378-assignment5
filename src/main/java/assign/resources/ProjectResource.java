@@ -78,9 +78,9 @@ public class ProjectResource {
 		p = readProject(input);
 		
 		try {
-			if(p.getName().equals("") || p.getDes().equals(""))
+			if(p == null || p.getName().equals("") || p.getDes().equals(""))
 				throw new SQLException();
-			p = db.getProject(db.addProject(p));
+			p = db.addProject(p);
 		}
 		catch(SQLException e) {
 			return Response.status(404).build();

@@ -14,11 +14,25 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import assign.domain.Project;
 import assign.domain.Meeting;
@@ -61,12 +75,12 @@ public class ProjectResource {
 				
 		Project p = new Project();
 		
-		p = projectService.readProject(input);
+		p = readProject(input);
 		
 		try {
 			if(p.getName().equals("") || p.getDes().equals(""))
 				throw new SQLException();
-			p = projectService.addProject(p);
+			p = db.getProject(db.addProject(p));
 		}
 		catch(SQLException e) {
 			return Response.status(404).build();
@@ -95,7 +109,7 @@ public class ProjectResource {
 	@Produces("application/xml")
 	public Response getProjects(@PathParam("project_id") Integer project_id) throws Exception {
 			
-		Project p = projectService.getProject(project_id);
+		Project p = db.getProject(project_id);
 			
 		if(p == null)
 			return Response.status(404).build();
@@ -116,14 +130,14 @@ public class ProjectResource {
 	public Response putProject(@PathParam("project_id") Integer project_id, @PathParam("meeting_id") Integer meeting_id,InputStream input) throws Exception {
 			
 		System.out.println("HERE1");
-		Project p = projectService.getProject(project_id);
+		Project p = db.getProject(project_id);
 		System.out.println("HERE2");
 		if(p == null)
 			return Response.status(400).build(); 
 		try {
 			if(p.getName().equals("") || p.getDes().equals(""))
 				throw new SQLException();
-			p = projectService.updateProject(p, projectService.readDes(input));
+			//p = projectService.updateProject(p, projectService.readDes(input));
 		}
 		catch(SQLException e) {
 			return Response.status(400).build();
@@ -140,21 +154,47 @@ public class ProjectResource {
 	@Consumes("application/xml")
 	public Response deleteProject(@PathParam("project_id") Integer project_id) throws Exception {
 				
-		
-		Project p = projectService.getProject(project_id);
+		Project p = new Project();
+		//Project p = projectService.getProject(project_id);
 		
 		if(p == null)
 			return Response.status(404).build(); 
 		try {
-			p = projectService.deleteProject(p);
+			db.deleteProject(p.getName());
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
 			return Response.status(400).build();
 		}
-		
-		return Response.ok().build();
-			
+		return Response.ok().build();	
+	}
+	public Project readProject(InputStream is) {
+		try {
+			 DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			 Document doc = builder.parse(is);
+			 Element root = doc.getDocumentElement();
+			 Project p = new Project();
+			 NodeList nodes = root.getChildNodes();
+			 if (root.getAttribute("id") != null && !root.getAttribute("id").trim().equals(""))
+				 p.setId(Integer.valueOf(root.getAttribute("id")));
+		 
+			 for (int i = 0; i < nodes.getLength(); i++) {
+				 Element element = (Element) nodes.item(i);
+				 if (element.getTagName().equals("name")) {
+					 p.setName(element.getTextContent());
+				 }
+				 else if (element.getTagName().equals("description")) {
+					 p.setDes(element.getTextContent());
+				 }
+				 else if (element.getTagName().equals("id")) {
+			           p.setId(Integer.parseInt(element.getTextContent()));
+			     }
+			 }
+			 return p;
+		}
+		catch (Exception e) {
+		     throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+		}
 	}
 	private String projectXML(Project p) throws JAXBException  {
 		StringWriter sw = new StringWriter();

@@ -56,7 +56,7 @@ public class Project {
 	@Id
 	@GeneratedValue(generator="increment")
 	@GenericGenerator(name="increment", strategy = "increment")
-	//@Column(name="project_id")
+	//@Column(name="projectId")
 	public int getId() {
 		return id;
 	}

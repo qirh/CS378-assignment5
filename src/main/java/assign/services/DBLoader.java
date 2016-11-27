@@ -30,11 +30,9 @@ public class DBLoader {
         
         logger = Logger.getLogger("EavesdropReader");
 	}
-	
 	public void loadData(Map<String, List<String>> data) {
 		logger.info("Inside loadData.");
 	}
-	
 	public int addMeeting(String name, String year) throws Exception {
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
@@ -44,6 +42,27 @@ public class DBLoader {
 			Meeting meeting = new Meeting(name, year); 
 			session.save(meeting);
 		    meetingId = meeting.getId();
+		    tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+				throw e;
+			}
+		}
+		finally {
+			session.close();
+		}
+		return meetingId;
+	}
+	public int addProject(Project p) throws Exception {
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		int meetingId = -1;
+		try {
+			tx = session.beginTransaction();
+			Project project = p.copy();
+			session.save(project);
+		    meetingId = project.getId();
 		    tx.commit();
 		} catch (Exception e) {
 			if (tx != null) {
@@ -108,16 +127,15 @@ public class DBLoader {
 		}
 		return projectId;
 	}
-	
+	// BAD PRACTICE
 	public ArrayList<Meeting> getMeetingsForProject(int project_id) throws Exception {
 		Session session = sessionFactory.openSession();		
 		session.beginTransaction();
-		String query = "from Meeting where project_id = " + project_id; // BAD PRACTICE
+		String query = "from Meeting where project_id = " + project_id; 
 		List<Meeting> meetings = session.createQuery(query).list();
 		session.close();
 		return new ArrayList<Meeting>(meetings);
 	}
-	
 	public List<Object[]> getMeetingsForProject(String projectName) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -128,15 +146,10 @@ public class DBLoader {
 		
 		return meetings;
 	}
-	
-	public Meeting getMeeting(String title) throws Exception {
+	public Meeting getMeeting(String meetingName) throws Exception {
 		Session session = sessionFactory.openSession();
-		
 		session.beginTransaction();
-		
-		Criteria criteria = session.createCriteria(Meeting.class).
-        		add(Restrictions.eq("title", title));
-		
+		Criteria criteria = session.createCriteria(Meeting.class).add(Restrictions.eq("meetingName", meetingName));
 		List<Meeting> meetings = criteria.list();
 		
 		session.close();
@@ -146,15 +159,11 @@ public class DBLoader {
 		return null;
 		
 	}
-	
-	public Project getCourse(String courseName) throws Exception {
+	public Project getProject(String projectName) throws Exception {
+
 		Session session = sessionFactory.openSession();
-		
 		session.beginTransaction();
-		
-		Criteria criteria = session.createCriteria(Project.class).
-        		add(Restrictions.eq("courseName", courseName));
-		
+		Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectName", projectName));	
 		List<Project> projects = criteria.list();
 		
 		session.close();
@@ -162,34 +171,37 @@ public class DBLoader {
 			return projects.get(0);	
 		return null;
 	}
-	
-	public void deleteProject(String courseName) throws Exception {
+	public Project getProject(int projectId) throws Exception {
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectId", projectId));	
+		List<Project> projects = criteria.list();
+		
+		session.close();
+		if (projects.size() > 0) 
+			return projects.get(0);	
+		return null;
+	}
+	public void deleteProject(String projectName) throws Exception {
 		
 		Session session = sessionFactory.openSession();		
 		session.beginTransaction();
-		String query = "from UTCourse c where c.courseName = :courseName";		
+		String query = "from Projects p where p.projectName = :projectName";		
 				
-		Project p = (Project)session.createQuery(query).setParameter("courseName", courseName).list().get(0);
-		
+		Project p = (Project)session.createQuery(query).setParameter("projectName", projectName).list().get(0);
         session.delete(p);
 
         session.getTransaction().commit();
         session.close();
 	}
-	
-	
-	public Assignment getAssignment(Long assignmentId) throws Exception {
+	public Meeting getMeeting(int meetingId) throws Exception {
 		Session session = sessionFactory.openSession();
-		
 		session.beginTransaction();
+		Criteria criteria = session.createCriteria(Meeting.class).add(Restrictions.eq("id", meetingId));
 		
-		Criteria criteria = session.createCriteria(Assignment.class).
-        		add(Restrictions.eq("id", assignmentId));
-		
-		List<Assignment> assignments = criteria.list();
-		
+		List<Meeting> meetings = criteria.list();
 		session.close();
-		
-		return assignments.get(0);		
+		return meetings.get(0);		
 	}
 }

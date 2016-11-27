@@ -3,6 +3,7 @@ package assign.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -24,9 +25,9 @@ public class DBLoader {
 	@SuppressWarnings("deprecation")
 	public DBLoader() {
 		// A SessionFactory is set up once for an application
-        sessionFactory = new Configuration()
-                .configure() // configures settings from hibernate.cfg.xml
-                .buildSessionFactory();
+		//System.out.println(sessionFactory.);
+		
+        sessionFactory = new Configuration().configure().buildSessionFactory();
         
         logger = Logger.getLogger("EavesdropReader");
 	}
@@ -101,7 +102,7 @@ public class DBLoader {
 		return assignmentId;
 	}
 	*/
-	public int addMeetingsToProject(String name, String des, ArrayList<Meeting> meetings) throws Exception {
+	public int addMeetingsToProject(String name, String des, Set<Meeting> meetings) throws Exception {
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		int projectId = -1;
@@ -172,15 +173,22 @@ public class DBLoader {
 		return null;
 	}
 	public Project getProject(int projectId) throws Exception {
-
 		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectId", projectId));	
-		List<Project> projects = criteria.list();
+		try{
+			session.beginTransaction();
+			Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectId", projectId));	
+			List<Project> projects = criteria.list();
+			
+			if (projects.size() > 0) 
+				return projects.get(0);	
+		}
+		catch (org.hibernate.QueryException e){
+			return null;
+		}
+		finally{
+			session.close();
+		}
 		
-		session.close();
-		if (projects.size() > 0) 
-			return projects.get(0);	
 		return null;
 	}
 	public void deleteProject(String projectName) throws Exception {

@@ -72,7 +72,7 @@ public class ProjectResource {
 	@Path("/projects")
 	@Consumes("application/xml")
 	public Response postProject(InputStream input) throws Exception {
-				
+		System.out.println("1) Create project");		
 		Project p = new Project();
 		
 		p = readProject(input);
@@ -98,7 +98,7 @@ public class ProjectResource {
 	@Path("/projects/{project_id}/Meetings")
 	@Consumes("application/xml")
 	public Response postMeeting(InputStream input) throws Exception {
-				
+		System.out.println("2) Create a meeting for a project");		
 		return null;
 			
 	}
@@ -108,7 +108,7 @@ public class ProjectResource {
 	@Path("/projects/{project_id}")
 	@Produces("application/xml")
 	public Response getProjects(@PathParam("project_id") Integer project_id) throws Exception {
-			
+		System.out.println("3) Get project details");	
 		Project p = db.getProject(project_id);
 			
 		if(p == null)
@@ -121,17 +121,15 @@ public class ProjectResource {
 		catch(JAXBException e) {
 			return Response.status(404).build();
 		}
-	}	
-	//4) Update meeting
-	// PUT http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>/meetings/<m1>
+	}
+	//x) Update Project
+	// PUT http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>
 	@PUT
 	@Path("/projects/{project_id}/Meetings/{meeting_id}")
 	@Consumes("application/xml")
 	public Response putProject(@PathParam("project_id") Integer project_id, @PathParam("meeting_id") Integer meeting_id,InputStream input) throws Exception {
-			
-		System.out.println("HERE1");
+		System.out.println("x) Update project");	
 		Project p = db.getProject(project_id);
-		System.out.println("HERE2");
 		if(p == null)
 			return Response.status(400).build(); 
 		try {
@@ -143,19 +141,37 @@ public class ProjectResource {
 			return Response.status(400).build();
 		}
 		System.out.println(p.getId());
-		return Response.ok().build();
-		
-			
+		return Response.ok().build();	
 	}
-	//5) Delete a project
+	//4) Update Meeting
+	// PUT http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>/meetings/<m1>
+	@PUT
+	@Path("/projects/{project_id}/Meetings/{meeting_id}")
+	@Consumes("application/xml")
+	public Response putMeeting(@PathParam("project_id") Integer project_id, @PathParam("meeting_id") Integer meeting_id,InputStream input) throws Exception {
+		System.out.println("4) Update meeting");	
+		Project p = db.getProject(project_id);
+		if(p == null)
+			return Response.status(400).build(); 
+		try {
+			if(p.getName().equals("") || p.getDes().equals(""))
+				throw new SQLException();
+			//p = projectService.updateProject(p, projectService.readDes(input));
+		}
+		catch(SQLException e) {
+			return Response.status(400).build();
+		}
+		System.out.println(p.getId());
+		return Response.ok().build();	
+	}
+	//5) Delete Project
 	// DELETE http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>
 	@DELETE
 	@Path("/projects/{project_id}")
 	@Consumes("application/xml")
 	public Response deleteProject(@PathParam("project_id") Integer project_id) throws Exception {
-				
+		System.out.println("5) Delete a project");	
 		Project p = new Project();
-		//Project p = projectService.getProject(project_id);
 		
 		if(p == null)
 			return Response.status(404).build(); 

@@ -1,6 +1,9 @@
 package assign.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -18,9 +21,10 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "Projects")
 public class Project {
+	
 	private String name;
 	private String des;
-	private ArrayList<Meeting> meetings;
+	private Set<Meeting> meetings = new HashSet<Meeting>();
 	private int id;
 	
 	public Project() {}
@@ -28,35 +32,35 @@ public class Project {
 		this.name = new String(name);
 		this.des = new String(des);
 	}
-	public Project(String name, String des, ArrayList<Meeting> meetings) {
+	public Project(String name, String des, Set<Meeting> meetings) {
 		this.name = new String(name);
 		this.des = new String(des);
 		this.meetings = meetings;
 	}
-	public Project(String name, String des, ArrayList<Meeting> meetings, int id) {
+	public Project(String name, String des, Set<Meeting> meetings, int id) {
 		this.name = new String(name);
 		this.des = new String(des);
 		this.meetings = meetings;
 		this.id = id;
 	}
-	
-	@Column(name="name")
+
+	@Column(name="projectName")
 	public String getName() {
 		return name;
 	}
-	@Column(name="description")
+	@Column(name="projectDescription")
 	public String getDes() {
 		return des;
 	}
-    @OneToMany(mappedBy="Project")
+	@OneToMany(mappedBy="project")
     @Cascade({CascadeType.DELETE})
-	public ArrayList<Meeting> getmeetings() {
+	public Set<Meeting> getmeetings() {
 		return meetings;
 	}
 	@Id
-	@GeneratedValue(generator="increment")
-	@GenericGenerator(name="increment", strategy = "increment")
-	//@Column(name="projectId")
+	@GeneratedValue//(generator="increment")
+	//@GenericGenerator(name="increment", strategy = "increment")
+	@Column(name="projectId")
 	public int getId() {
 		return id;
 	}
@@ -66,7 +70,7 @@ public class Project {
 	public void setDes(String des) {
 		this.des = des;
 	}
-	public void setMeetings(ArrayList<Meeting> meetings) {
+	public void setMeetings(Set<Meeting> meetings) {
 		this.meetings = meetings;
 	}
     public void setId(int id) {
@@ -75,8 +79,8 @@ public class Project {
     public void addMeeting(Meeting meeting) {
 		meetings.add(meeting);
 	}
-    private ArrayList<Meeting> copyMeetings(ArrayList<Meeting> meetings) {
-    	ArrayList<Meeting> tmp = new ArrayList<Meeting>();
+    private Set<Meeting> copyMeetings(Set<Meeting> meetings) {
+    	Set<Meeting> tmp = new HashSet<Meeting>();
     	for(Meeting m : meetings)
     		tmp.add(m.copy());
     	return tmp;

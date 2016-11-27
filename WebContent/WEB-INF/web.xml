@@ -2,23 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
   <context-param>
     <param-name>javax.ws.rs.Application</param-name>
-    <param-value>assign.resources.UTCoursesApplication</param-value>
-  </context-param>
-  <context-param>
-    <param-name>DBNAME</param-name>
-    <param-value>cs378_almto3</param-value>
-  </context-param>
-  <context-param>
-    <param-name>DBHOST</param-name>
-    <param-value>localhost</param-value>
-  </context-param>
-  <context-param>
-    <param-name>DBUSERNAME</param-name>
-    <param-value>almto3</param-value>
-  </context-param>
-  <context-param>
-    <param-name>DBPASSWORD</param-name>
-    <param-value>PxWHQV5wg5</param-value>
+    <param-value>assign.resources.ProjectApplication</param-value>
   </context-param>
   <servlet>
     <servlet-name>assignment5</servlet-name>

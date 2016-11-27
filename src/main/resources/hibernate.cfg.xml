@@ -32,7 +32,7 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306//cs378_almto3</property>
+        <property name="connection.url">jdbc:mysql://fall-2016.cs.utexas.edu/cs378_almto3</property>
         <property name="connection.username">almto3</property>
         <property name="connection.password">PxWHQV5wg5</property>
 
@@ -49,7 +49,7 @@
         <property name="show_sql">true</property>
 
         <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
                 
         <!-- Names the annotated entity class -->
         <mapping class="assign.domain.Meeting"/>

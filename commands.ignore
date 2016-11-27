@@ -1,6 +1,27 @@
+mysql:
+	--host=fall-2016.cs.utexas.edu -u almto3 -pPxWHQV5wg5
+
+1) Create project:
+	curl -i --data "<project><name>curl</name><description>testing post on curl</description></project>" -H "Content-Type: application/xml" -X POST http://localhost:8080/assignment5/myeavesdrop/projects/
+
+2) Create a meeting for a project:
+
+3) Get project details:
+	curl -i -X GET http://localhost:8080/assignment5/myeavesdrop/projects/7
+	
+x) Update Project:
+	curl -i --data "<project><name>curl</name><description>testing poswewerwerwert on curl</description></project>" -H "Content-Type: application/xml" -X PUT http://localhost:8080/assignment5/myeavesdrop/projects/5
+
+4) Update Meeting:
+	PUT http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>/meetings/<m1>
+
+5) Delete Project:
+	DELETE http://localhost:8080/assignment5/myeavesdrop/projects/<projectId>
+
 
 create cs378_almto3;
 use cs378_almto3;
+
 
 create table IF NOT EXISTS Projects(projectName varchar(255) NOT NULL, projectDescription varchar(255) NOT NULL, projectId int NOT NULL AUTO_INCREMENT, PRIMARY KEY(projectId));
 create table IF NOT EXISTS Meetings(meetingName varchar(255) NOT NULL, meetingYear varchar(255) NOT NULL, meetingId int NOT NULL AUTO_INCREMENT, projectId int NOT NULL, PRIMARY KEY(meetingId), FOREIGN KEY (projectId) REFERENCES Projects(projectId) ON DELETE CASCADE);

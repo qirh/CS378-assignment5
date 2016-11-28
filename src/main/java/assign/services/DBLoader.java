@@ -1,6 +1,5 @@
 package assign.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,12 +56,21 @@ public class DBLoader {
 		return project;
 	}
 	public Meeting addMeeting(Meeting m, int projectId) throws Exception {
+		//System.out.println("addMeeting(Meeting m, int projectId) where projectId == " + projectId + " and meetingId == " + m.getMeetingId());
+		
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		Meeting meeting = null;
 		try {
 			tx = session.beginTransaction();
-			meeting = m.copy(); 
+			meeting = m;
+			
+			if(getProject(projectId) == null){
+				return null;
+			}
+			Project p = getProject(projectId);
+			meeting.setProject(p);
+			
 			session.save(meeting);
 		    tx.commit();
 		} catch (Exception e) {
@@ -76,19 +84,23 @@ public class DBLoader {
 		}
 		return meeting;
 	}
-	/*
-	public Long addAssignmentAndCourse(String title, String courseTitle) throws Exception {
+	public Meeting updateMeeting(Meeting meeting, int meetingId) throws Exception {
+		//System.out.println("updateMeeting(Meeting m, int meetingId) where meetingId == " + meetingId);
+		
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
-		Long assignmentId = null;
+		
 		try {
+			
 			tx = session.beginTransaction();
-			Assignment newAssignment = new Assignment( title, new Date() );
-			UTCourse course = new UTCourse(courseTitle);
-			newAssignment.setCourse(course);
-			session.save(course);
-			session.save(newAssignment);
-		    assignmentId = newAssignment.getId();
+			Meeting oldMeeting = getMeeting(meetingId);
+			
+			if(oldMeeting == null){
+				return null;
+			}
+			oldMeeting.setMeetingName(meeting.getMeetingName());
+			oldMeeting.setMeetingYear(meeting.getMeetingYear());
+			session.update(oldMeeting);
 		    tx.commit();
 		} catch (Exception e) {
 			if (tx != null) {
@@ -99,47 +111,52 @@ public class DBLoader {
 		finally {
 			session.close();
 		}
-		return assignmentId;
+		return meeting;
 	}
-	*/
-	public int addMeetingsToProject(String name, String des, Set<Meeting> meetings) throws Exception {
+	public Project getProject(int projectId) throws Exception {
+		//System.out.println("getProject(int projectId) where projectId == " + projectId);
 		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		int projectId = -1;
-		try {
-			tx = session.beginTransaction();
-			Project project = new Project(name, des, meetings);
-			session.save(project);
-			projectId = project.getId();
-			for(Meeting m : meetings) {
-				Meeting newmeeting = m.copy();		//could be problematic, because of the gen
-				newmeeting.setProject(project);
-				session.save(newmeeting);
-			}
-		    tx.commit();
-		} catch (Exception e) {
-			if (tx != null) {
-				tx.rollback();
-				throw e;
-			}
+		try{
+			session.beginTransaction();
+			Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("projectId", projectId ));	
+			
+			List<Project> projects = criteria.list();
+			if (projects.size() > 0) 
+				return projects.get(0);	
 		}
-		finally {
+		catch (org.hibernate.QueryException e){
+			e.printStackTrace();
+			return null;
+		}
+		finally{
 			session.close();
 		}
-		return projectId;
+		return null;
 	}
-	public List<Object[]> getMeetingsForProject(String projectName) throws Exception {
+	
+	public void deleteProject(Project project) throws Exception {
+		
+		Session session = sessionFactory.openSession();		
+		session.beginTransaction();
+		
+        session.delete(project);
+
+        session.getTransaction().commit();
+        session.close();
+	}
+	
+	public Meeting getMeeting(int meetingId) throws Exception {
+		//System.out.println("getMeeting(int meetingId) where meetingId == " + meetingId);
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-		String query = "from Meeting m join m.project_id x where x.projectName = :pid";		
-				
-		List<Object[]> meetings = session.createQuery(query).setParameter("pid", projectName).list();
-		session.close();
+		Criteria criteria = session.createCriteria(Meeting.class).add(Restrictions.eq("id", meetingId));
 		
-		return meetings;
+		List<Meeting> meetings = criteria.list();
+		session.close();
+		return meetings.get(0);		
 	}
 	public Meeting getMeeting(String meetingName) throws Exception {
-		
+		//System.out.println("getMeeting(int meetingName) where meetingName == " + meetingName);
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		Criteria criteria = session.createCriteria(Meeting.class).add(Restrictions.eq("meetingName", meetingName));
@@ -151,46 +168,5 @@ public class DBLoader {
 			return meetings.get(0);			
 		return null;
 		
-	}
-	public Project getProject(int projectId) throws Exception {
-		System.out.println("getProject(int projectId) where projectId == " + projectId);
-		Session session = sessionFactory.openSession();
-		try{
-			session.beginTransaction();
-			Criteria criteria = session.createCriteria(Project.class).add(Restrictions.eq("", projectId ));	
-			
-			List<Project> projects = criteria.list();
-			if (projects.size() > 0) 
-				return projects.get(0);	
-		}
-		catch (org.hibernate.QueryException e){
-			return null;
-		}
-		finally{
-			session.close();
-		}
-		
-		return null;
-	}
-	public void deleteProject(String projectName) throws Exception {
-		
-		Session session = sessionFactory.openSession();		
-		session.beginTransaction();
-		String query = "from Projects p where p.projectName = :projectName";		
-				
-		Project p = (Project)session.createQuery(query).setParameter("projectName", projectName).list().get(0);
-        session.delete(p);
-
-        session.getTransaction().commit();
-        session.close();
-	}
-	public Meeting getMeeting(int meetingId) throws Exception {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		Criteria criteria = session.createCriteria(Meeting.class).add(Restrictions.eq("id", meetingId));
-		
-		List<Meeting> meetings = criteria.list();
-		session.close();
-		return meetings.get(0);		
 	}
 }

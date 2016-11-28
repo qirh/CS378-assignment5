@@ -10,10 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+@XmlRootElement (name = "Project")
 @Entity
 @Table(name = "Projects")
 public class Project {
@@ -39,37 +42,41 @@ public class Project {
 		this.meetings = meetings;
 		this.projectId = projectId;
 	}
-
+	
+	@XmlElement
 	@Column(name="projectName")
-	public String getName() {
+	public String getProjectName() {
 		return projectName;
 	}
+	@XmlElement
 	@Column(name="projectDescription")
-	public String getDes() {
+	public String getProjectDescription() {
 		return projectDescription;
 	}
+	//@XmlElement
 	@OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     @Cascade({CascadeType.DELETE})
 	public Set<Meeting> getmeetings() {
 		return meetings;
 	}
+	//@XmlElement
 	@Id
 	@GeneratedValue//(generator="increment")
 	//@GenericGenerator(name="increment", strategy = "increment")
 	@Column(name="projectId")
-	public int getId() {
+	public int getProjectId() {
 		return projectId;
 	}
-	public void setName(String name) {
+	public void setProjectName(String name) {
 		this.projectName = name;
 	}
-	public void setDes(String des) {
+	public void setProjectDescription(String des) {
 		this.projectDescription = des;
 	}
 	public void setMeetings(Set<Meeting> meetings) {
 		this.meetings = meetings;
 	}
-    public void setId(int id) {
+    public void setProjectId(int id) {
         this.projectId = id;
     }
     public void addMeeting(Meeting meeting) {
@@ -78,7 +85,7 @@ public class Project {
     private Set<Meeting> copyMeetings(Set<Meeting> meetings) {
     	Set<Meeting> tmp = new HashSet<Meeting>();
     	for(Meeting m : meetings)
-    		tmp.add(m.copy());
+    		tmp.add(m);
     	return tmp;
 	}
     private void printMeetings() {
@@ -88,10 +95,10 @@ public class Project {
     	System.out.println();
 	}
     public void printProject() {
-    	System.out.println(this.getName());
-		System.out.println(this.getDes());
+    	System.out.println(this.getProjectName());
+		System.out.println(this.getProjectDescription());
 		this.printMeetings();
-		System.out.println(this.getId());
+		System.out.println(this.getProjectId());
 	}
     public Project copy() {
     	return new Project(this.projectName, this.projectDescription, copyMeetings(this.meetings), this.projectId);

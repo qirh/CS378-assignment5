@@ -21,7 +21,7 @@ import javax.persistence.TemporalType;
 
 
 
-//@XmlRootElement(name = "meeting")
+@XmlRootElement (name = "Meeting")
 @Entity
 @Table( name = "Meetings" )
 public class Meeting {
@@ -41,19 +41,21 @@ public class Meeting {
 		this.meetingYear = new String(year);
 		this.meetingId = id;
 	}
-	
+	@XmlElement
 	@Column(name = "meetingName")
-	public String getName() {
+	public String getMeetingName() {
 		return meetingName;
 	}
+	@XmlElement
 	@Column(name = "meetingYear")
-	public String getYear() {
+	public String getMeetingYear() {
 		return meetingYear;
 	}
+	//@XmlElement
 	@Id
 	@Column(name = "meetingId")
 	@GeneratedValue//(strategy=GenerationType.AUTO)
-	public int getId() {
+	public int getMeetingId() {
 		return meetingId;
 	}
 	@ManyToOne
@@ -61,20 +63,22 @@ public class Meeting {
     	return this.project;
     }
 	
-	public void setName(String name) {
+	public void setMeetingName(String name) {
 		this.meetingName = name;
 	}
-	public void setYear(String year) {
+	public void setMeetingYear(String year) {
 		this.meetingYear = year;
 	}
-    public void setId(int id) {
+    public void setMeetingId(int id) {
         this.meetingId = id;
     }
     public void setProject(Project p) {
         this.project = p;
     }
-    
-    public Meeting copy() {
-    	return new Meeting(this.meetingName, this.meetingYear, this.meetingId);
-    }
+    public void printMeeting() {
+    	System.out.println(this.getMeetingId());
+    	System.out.println(this.getMeetingName());
+		System.out.println(this.getMeetingYear());
+		this.project.printProject();
+	}
 }
